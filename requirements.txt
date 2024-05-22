@@ -1,0 +1,7 @@
+Python==3.7
+FastAPI==0.68.1
+Uvicorn==0.15.0
+Pydantic==1.8.2
+NetworkX==2.6.3
+Pytest==6.2.5
+SQLAlchemy==1.4.25
