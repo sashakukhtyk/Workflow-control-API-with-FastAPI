@@ -1,47 +1,35 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal, List, Union
-
-
-class Edge(BaseModel):
-    source: int
-    target: int
-    condition: Optional[Literal['yes', 'no']] = None
+from typing import List, Optional, Literal
 
 class Node(BaseModel):
-    id: int
+    id: str
     type: Literal['start', 'message', 'condition', 'end']
+    name: Optional[str] = None
     message_status: Optional[Literal['pending', 'sent', 'opened']] = None
     message_text: Optional[str] = None
     condition: Optional[bool] = None
-    edges: Optional[List[Edge]] = Field(default_factory=list)
 
-    def add_edge(self, edge: Edge):
-        if self.type == 'start' and len(self.edges) > 0:
-            raise ValueError("Start node can only have one target edge")
-        if self.type == 'end' and edge.target is not None:
-            raise ValueError("End node cannot have target edges")
-        if self.type == 'message' and len([e for e in self.edges if e.target == edge.target]) > 0:
-            raise ValueError("Message node can only have one target edge")
-        if self.type == 'condition' and len(self.edges) > 1:
-            raise ValueError("Condition node can only have two target edges")
-        self.edges.append(edge)
+class Edge(BaseModel):
+    source: str
+    target: str
+    condition: Optional[Literal['yes', 'no']] = None
 
-class StartNode(Node):
-    id: int
-    type: Literal['start'] = 'start'
+class WorkflowCreateRequest(BaseModel):
+    nodes: List[Node]
+    edges: List[Edge]
 
-class MessageNode(Node):
-    id: int
-    type: Literal['message'] = 'message'
-    message_status: Literal['pending', 'sent', 'opened']
-    message_text: str
+class WorkflowUpdateRequest(BaseModel):
+    nodes: Optional[List[Node]] = None
+    edges: Optional[List[Edge]] = None
 
-class ConditionNode(Node):
-    id: int
-    type: Literal['condition'] = 'condition'
-    condition: bool
+class PathRequest(BaseModel):
+    start_node: str
+    end_node: str
 
-class EndNode(Node):
-    id: int
-    type: Literal['end'] = 'end'
+class PathResponse(BaseModel):
+    path: List[str]
 
+class WorkflowResponse(BaseModel):
+    id: str
+    nodes: List[Node]
+    edges: List[Edge]

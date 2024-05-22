@@ -15,7 +15,7 @@ async def get_workflow(workflow_id: int):
 async def create_workflow(workflow_id: int):
     if workflow_id in workflows:
         raise HTTPException(status_code=400, detail="Workflow already exists")
-    workflows[workflow_id] = [Node(id=0, type='start')]
+    workflows[workflow_id] = [Node(id="0", type='start')]
 
 @app.put("/workflow/update/{workflow_id}")
 async def update_workflow(workflow_id: int, node: Node):
