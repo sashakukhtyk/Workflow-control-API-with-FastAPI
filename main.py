@@ -1,55 +1,57 @@
 from fastapi import FastAPI, HTTPException
-from models import Node, Edge
+from models import Node, Edge, WorkflowCreateRequest, WorkflowUpdateRequest, PathRequest, PathResponse
+from graph_manager import GraphManager
 
 
 app = FastAPI()
-workflows = {}
-
-@app.get("/workflow/{workflow_id}")
-async def get_workflow(workflow_id: int):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    return workflows[workflow_id]
+graph_manager = GraphManager()
 
 @app.post("/workflow/create")
-async def create_workflow(workflow_id: int):
-    if workflow_id in workflows:
-        raise HTTPException(status_code=400, detail="Workflow already exists")
-    workflows[workflow_id] = [Node(id="0", type='start')]
+async def create_workflow(workflow_id: str, request: WorkflowCreateRequest):
+    try:
+        graph_manager.create_workflow(workflow_id, request.nodes, request.edges)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Workflow created successfully"}
 
 @app.put("/workflow/update/{workflow_id}")
-async def update_workflow(workflow_id: int, node: Node):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    workflows[workflow_id].append(node)
-
+async def update_workflow(workflow_id: str, request: WorkflowUpdateRequest):
+    try:
+        graph_manager.update_workflow(workflow_id, request.nodes, request.edges)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Workflow updated successfully"}
 
 @app.delete("/workflow/delete/{workflow_id}")
-async def delete_workflow(workflow_id: int):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    del workflows[workflow_id]
-
+async def delete_workflow(workflow_id: str):
+    try:
+        graph_manager.delete_workflow(workflow_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Workflow deleted successfully"}
 
 @app.post("/workflow/add_node/{workflow_id}")
-async def add_node(workflow_id: int, node: Node):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    workflows[workflow_id].append(node)
-
+async def add_node(workflow_id: str, node: Node):
+    try:
+        graph_manager.add_node(workflow_id, node)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Node added successfully"}
 
 @app.post("/workflow/add_edge/{workflow_id}")
-async def add_edge(workflow_id: int, edge: Edge):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    source_node = next((node for node in workflows[workflow_id] if node.id == edge.source), None)
-    if source_node is None:
-        raise HTTPException(status_code=400, detail="Source node not found")
-    source_node.add_edge(edge)
+async def add_edge(workflow_id: str, edge: Edge):
+    try:
+        graph_manager.add_edge(workflow_id, edge)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Edge added successfully"}
 
-@app.post("/workflow/path")
-async def get_path(workflow_id: int, start_node_id: int, end_node_id: int):
-    if workflow_id not in workflows:
-        raise HTTPException(status_code=404, detail="Workflow not found")
-    # This is a placeholder. You'll need to implement a pathfinding algorithm here.
-    return {"path": []}
+@app.post("/workflow/path", response_model=PathResponse)
+async def get_path(workflow_id: str, request: PathRequest):
+    try:
+        path = graph_manager.find_path(workflow_id, request.start_node, request.end_node)
+        if path is None:
+            raise HTTPException(status_code=404, detail="Path not found")
+        return PathResponse(path=path)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
