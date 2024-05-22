@@ -2,10 +2,10 @@ from fastapi import FastAPI, HTTPException
 from models import Node, Edge, WorkflowCreateRequest, WorkflowUpdateRequest, PathRequest, PathResponse
 from graph_manager import GraphManager
 
-
 app = FastAPI()
 graph_manager = GraphManager()
 
+# Create a new workflow
 @app.post("/workflow/create")
 async def create_workflow(workflow_id: str, request: WorkflowCreateRequest):
     try:
@@ -14,6 +14,7 @@ async def create_workflow(workflow_id: str, request: WorkflowCreateRequest):
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Workflow created successfully"}
 
+# Update an existing workflow
 @app.put("/workflow/update/{workflow_id}")
 async def update_workflow(workflow_id: str, request: WorkflowUpdateRequest):
     try:
@@ -22,6 +23,7 @@ async def update_workflow(workflow_id: str, request: WorkflowUpdateRequest):
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Workflow updated successfully"}
 
+# Delete a workflow
 @app.delete("/workflow/delete/{workflow_id}")
 async def delete_workflow(workflow_id: str):
     try:
@@ -30,6 +32,7 @@ async def delete_workflow(workflow_id: str):
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Workflow deleted successfully"}
 
+# Add a node to a workflow
 @app.post("/workflow/add_node/{workflow_id}")
 async def add_node(workflow_id: str, node: Node):
     try:
@@ -38,6 +41,7 @@ async def add_node(workflow_id: str, node: Node):
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Node added successfully"}
 
+# Add an edge to a workflow
 @app.post("/workflow/add_edge/{workflow_id}")
 async def add_edge(workflow_id: str, edge: Edge):
     try:
@@ -46,6 +50,7 @@ async def add_edge(workflow_id: str, edge: Edge):
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Edge added successfully"}
 
+# Find a path in a workflow
 @app.post("/workflow/path", response_model=PathResponse)
 async def get_path(workflow_id: str, request: PathRequest):
     try:

@@ -7,6 +7,7 @@ class GraphManager:
         self.workflows = {}
     
     def create_workflow(self, workflow_id: str, nodes: List[Node], edges: List[Edge]):
+        # Check if workflow with the same ID already exists
         if workflow_id in self.workflows:
             raise ValueError("Workflow with this ID already exists.")
         self.workflows[workflow_id] = nx.DiGraph()
@@ -17,6 +18,7 @@ class GraphManager:
             self.add_edge(workflow_id, edge)
     
     def update_workflow(self, workflow_id: str, nodes: List[Node], edges: List[Edge]):
+        # Check if workflow exists
         if workflow_id not in self.workflows:
             raise ValueError("Workflow not found.")
         self.node_data = {node.id: node for node in nodes}
@@ -26,6 +28,7 @@ class GraphManager:
             self.workflows[workflow_id].add_edge(edge.source, edge.target, condition=edge.condition)
     
     def delete_workflow(self, workflow_id: str):
+        # Check if workflow exists
         if workflow_id in self.workflows:
             del self.workflows[workflow_id]
         else:
@@ -39,6 +42,7 @@ class GraphManager:
         source_type = self.node_data[edge.source].type
         target_type = self.node_data[edge.target].type
         
+        # Check conditions for different node types
         if source_type == 'start':
             if len(list(self.workflows[workflow_id].successors(edge.source))) >= 1:
                 raise ValueError("Start node can only have one outgoing edge.")
@@ -62,6 +66,7 @@ class GraphManager:
         self.workflows[workflow_id].add_edge(edge.source, edge.target, condition=edge.condition)
     
     def find_path(self, workflow_id: str, start_node: str, end_node: str):
+        # Check if workflow exists
         if workflow_id not in self.workflows:
             raise ValueError("Workflow not found.")
         try:
