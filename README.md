@@ -10,7 +10,7 @@ This is a workflow control API built with FastAPI. It allows users to manage and
 - Delete workflows
 
 ## Installation
-1. Clone the repository: `git clone https://github.com/your-username/Workflow-control-API-with-FastAPI.git`
+1. Clone the repository: `git clone https://github.com/sashakukhtyk/Workflow-control-API-with-FastAPI.git`
 2. Navigate to the project directory: `cd Workflow-control-API-with-FastAPI`
 3. Install the dependencies: `pip install -r requirements.txt`
 
