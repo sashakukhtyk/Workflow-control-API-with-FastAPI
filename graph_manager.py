@@ -1,5 +1,5 @@
 from typing import Dict
-from .models import StartNode, MessageNode, ConditionNode, EndNode, Node
+from models import StartNode, MessageNode, ConditionNode, EndNode, Node
 import networkx as nx
 
 class GraphManager:

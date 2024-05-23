@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from .graph_manager import GraphManager
-from .models import StartNode, MessageNode, ConditionNode, EndNode
+from graph_manager import GraphManager
+from models import StartNode, MessageNode, ConditionNode, EndNode
 
 app = FastAPI()
 manager = GraphManager()
